@@ -1,77 +1,93 @@
-const db = require("../models");
-const Result = db.result;
-const Op = db.Sequelize.Op;
+const db = require("../models"); // Import models from the database
+const Result = db.result; // Define the Result model
+const Op = db.Sequelize.Op; // Define the Sequelize operation
 
-// Create and Save a new result
-// api/result/create
-// post method
+/**
+ * Create a new Result instance
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {void}
+ */
 exports.create = (req, res) => {
-  console.log(req.body);
-  // Validate request
+  // Check if postId is present in the request body
   if (!req.body.postId) {
     res.status(400).send({
       message: "Content can not be empty!",
     });
     return;
   }
-  //   const content = JSON.stringify(req.body.content);
-  // Create a survey
+
+  // Create a new Result object
   const result = {
     postId: req.body.postId,
     surveyResult: req.body.surveyResult,
     surveyResultText: req.body.surveyResultText,
   };
 
-  // Save survey in the database
+  // Create a new Result instance with the Result object
   Result.create(result)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
+      // Send an error message if creation fails
       res.status(500).send({
         message: err.message || "Some error occurred while creating the Forms.",
       });
     });
 };
 
-// Retrieve all surveys from the database.
-// api/result/get-all
-// get method
+/**
+ * Retrieve all Result instances
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {void}
+ */
 exports.findAll = (req, res) => {
-  // const content = req.query.surveyResult;
-  // var condition = content ? { content: { [Op.like]: `%${content}%` } } : null;
+  // Retrieve all Result instances
   Result.findAll()
     .then((data) => {
       if (data.length > 0) {
         res.send(data);
       } else {
+        // Log a message if no data is found
         res.send(console.log("hello survey"));
       }
     })
     .catch((err) => {
+      // Send an error message if retrieval fails
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving Forms.",
       });
     });
 };
 
-// Find a single survey with an id
+/**
+ * Retrieve a single Result instance by id
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {void}
+ */
 exports.findOne = async (req, res) => {
   try {
+    // Retrieve the Result instance by id
     const id = req.params.id;
     const data = await Result.findByPk(id);
 
     if (!data) {
+      // Send an error message if the Result instance is not found
       return res.status(404).send({
         message: `Cannot find Form with id=${id}.`,
       });
     }
-    // Convert surveyResult object to an array of objects
+
+    // Parse the surveyResult JSON string
     const surveyResult = JSON.parse(data.surveyResult);
     const surveyResultArray = Object.keys(surveyResult).map((key) => ({
       [key]: surveyResult[key],
     }));
 
+    // Create a response object with the id and surveyResultArray
     const response = {
       id: data.id,
       surveyResult: surveyResultArray,
@@ -79,28 +95,36 @@ exports.findOne = async (req, res) => {
 
     return res.send(response);
   } catch (err) {
+    // Send an error message if retrieval fails
     return res.status(500).send({
       message: "Error retrieving Form with id=" + req.params.id,
     });
   }
 };
 
-// find by id
+/**
+ * Retrieve all Result instances by postId
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {void}
+ */
 exports.findAllById = (req, res) => {
+  // Retrieve the postId from the request parameters
   const id = req.params.id;
-  // Check if id is provided in the query parameter
   if (!id) {
+    // Send an error message if the id is not provided
     return res.status(400).send({
       message: "ID parameter is required to retrieve data by ID.",
     });
   }
 
+  // Retrieve all Result instances with the postId
   Result.findAll({
     where: { postId: id },
   })
     .then((data) => {
       if (data.length > 0) {
-        // Respond with an array of objects with the same id
+        // Parse the surveyResult JSON strings
         const surveyResultArray = data.map((item) =>
           JSON.parse(item.surveyResult)
         );
@@ -110,10 +134,12 @@ exports.findAllById = (req, res) => {
         };
         res.send(response);
       } else {
+        // Send a message if no data is found
         res.send("No data found for the provided ID.");
       }
     })
     .catch((err) => {
+      // Send an error message if retrieval fails
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving data by ID.",
