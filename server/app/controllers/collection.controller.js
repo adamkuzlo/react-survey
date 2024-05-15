@@ -42,7 +42,7 @@ exports.findAll = (req, res) => {
         res.send(data);
       } else {
         res.status(400).send({
-          message: err.message || "Cannot find survey.Empty data.",
+          message: "Cannot find survey.Empty data.",
         });
       }
     })
@@ -69,7 +69,7 @@ exports.findOne = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving Form with id=" + id,
+        message: `Error retrieving Form with id=${id}.`,
       });
     });
 };
@@ -103,7 +103,7 @@ exports.updateOne = (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(500).send({
-        message: "Error updating Form with id=" + id,
+        message: `Error updating Form with id=${id}.`,
       });
     });
 };
@@ -127,7 +127,7 @@ exports.deleteOne = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Form with id=" + id,
+        message: `Could not delete Form with id=${id}.`,
       });
     });
 };
