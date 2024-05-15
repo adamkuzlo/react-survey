@@ -1,41 +1,50 @@
-const express = require("express");
-const cors = require("cors");
-const app = express();
-// const collectionRountes = require("./app/routes/collectionRoutes");
-http: var corsOptions = {
-  origin: [process.env.BASE_URL, "http://localhost:3000"],
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
+const express = require("express"); // Importing the express module
+const cors = require("cors"); // Importing the cors module
+const app = express(); // Creating an instance of the express application
+
+// const collectionRountes = require("./app/routes/collectionRoutes"); // Importing collection routes (currently commented out)
+
+// CORS options configuration
+const corsOptions = {
+  origin: [process.env.BASE_URL, "http://localhost:3000"], // Specifying allowed origins
+  credentials: true, // Enabling credentials
+  optionSuccessStatus: 200, // Setting the success status for OPTIONS requests
 };
 
+// Applying CORS middleware with the specified options
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
+// Parse requests with content-type application/json
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+// Parse requests with content-type application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// simple route
+// Simple route for the root URL
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to my application!" });
+  res.json({ message: "Welcome to my application!" }); // Returning a JSON response with a welcome message
 });
 
-//route
+// Importing and applying collection routes
 require("./app/routes/collectionRoutes")(app);
+
+// Importing and applying result routes
 require("./app/routes/resultRoutes")(app);
 
-//db sequelize
+// Importing the database models
 const db = require("./app/models");
 
+// Synchronizing the database using Sequelize
 db.sequelize.sync();
 // db.sequelize.sync({ force: true }).then(() => {
-//in the development, need to drop existing tables and re-sync database with using 'force:true'
-// console.log("Drop and re-sync db.");
+//   // Drop and re-sync the database (currently commented out)
+//   // console.log("Drop and re-sync db.");
 // });
 
-// set port, listen for requests
+// Setting the port for the application
 const PORT = process.env.PORT || 8080;
+
+// Starting the server and listening for requests
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log(`Server is running on port ${PORT}.`); // Logging a message when the server starts
 });
