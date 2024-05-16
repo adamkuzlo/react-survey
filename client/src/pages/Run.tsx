@@ -5,47 +5,66 @@ import { get, ISurveyDefinition } from "../redux/surveys";
 import { Model, StylesManager } from "survey-core";
 import { Survey } from "survey-react-ui";
 import "survey-core/defaultV2.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-StylesManager.applyTheme("defaultV2");
+// Apply theme dynamically based on a config or user preference
+const theme = "defaultV2";
+StylesManager.applyTheme(theme);
 
 const Run = () => {
-  // useState
-  const dispatch = useReduxDispatch();
+  // Rename dispatch to reduxDispatch for clarity
+  const reduxDispatch = useReduxDispatch();
   const { id } = useParams();
   const [survey, setSurvey] = useState<ISurveyDefinition | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Create a callback function to handle the survey completion
+  const handleSurveyComplete = useCallback(
+    (sender: Model) => {
+      reduxDispatch(
+        post({
+          postId: id as string,
+          surveyResult: sender.data,
+          surveyResultText: JSON.stringify(sender.data),
+        })
+      );
+    },
+    [reduxDispatch, id]
+  );
 
   useEffect(() => {
-    (async () => {
-      const surveyAction = await dispatch(get(id as string));
-      const data = surveyAction.payload;
-      const content = JSON.parse(data.content);
-      setSurvey(content);
-    })();
-  }, []);
+    const fetchSurvey = async () => {
+      try {
+        const surveyAction = await reduxDispatch(get(id as string));
+        const data = surveyAction.payload;
+        const content = JSON.parse(data.content);
+        setSurvey(content);
+      } catch (error: any) {
+        setError(error.message);
+      }
+    };
+    fetchSurvey();
+  }, [reduxDispatch, id]);
 
-  const model = new Model(survey);
-  model.onComplete.add((sender: Model) => {
-    dispatch(
-      post({
-        postId: id as string,
-        surveyResult: sender.data,
-        surveyResultText: JSON.stringify(sender.data),
-      })
-    );
-  });
+  // Create the Model instance only when the survey is available
+  const model = survey ? new Model(survey) : null;
+
+  // Add the event listener only when the model is created
+  if (model) {
+    model.onComplete.add(handleSurveyComplete);
+  }
 
   return (
     <>
       {survey ? (
         <div>
-          <h1>{survey.title}</h1>{" "}
+          <h1>{survey.title}</h1>
           <p style={{ paddingLeft: "1.5rem" }}>{survey.description}</p>
         </div>
       ) : (
-        <p>"No survey"</p>
+        <p>{error ? `Error: ${error}` : "No survey"}</p>
       )}
-      <Survey model={model} />
+      {model && <Survey model={model} />}
     </>
   );
 };
