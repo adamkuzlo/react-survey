@@ -58,4 +58,12 @@ export const post = createAsyncThunk(
   }
 );
 
+export const updateResult = createAsyncThunk(
+  "results/update",
+  async ({ id, data }: { id: string; data: any }) => {
+    const response = await axios.put(`api/result/update/${id}`, { data });
+    return response.data;
+  }
+);
+
 export default resultsSlice.reducer;

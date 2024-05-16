@@ -125,14 +125,13 @@ exports.findAllById = (req, res) => {
     .then((data) => {
       if (data.length > 0) {
         // Parse the surveyResult JSON strings
-        const surveyResultArray = data.map((item) =>
-          JSON.parse(item.surveyResult)
-        );
-        const response = {
-          id: data.id,
-          surveyResult: surveyResultArray,
-        };
-        res.send(response);
+
+        const dataArray = data.map((item) => ({
+          id: item.id,
+          surveyResult: JSON.parse(item.surveyResult),
+        }));
+
+        res.send(dataArray);
       } else {
         // Send a message if no data is found
         res.send("No data found for the provided ID.");
@@ -145,4 +144,28 @@ exports.findAllById = (req, res) => {
           err.message || "Some error occurred while retrieving data by ID.",
       });
     });
+};
+
+exports.update = (req, res) => {
+  const newData = req.body.data;
+
+  newData.forEach(async (item) => {
+    const itemId = item.id;
+    const newSurveyResult = item.surveyResult;
+
+    try {
+      await Result.update(
+        { surveyResult: newSurveyResult },
+        { where: { id: itemId } }
+      );
+    } catch (err) {
+      return res.status(500).send({
+        message: "Error updating Result with id=" + itemId,
+      });
+    }
+  });
+
+  res.send({
+    message: "Results were updated successfully.",
+  });
 };

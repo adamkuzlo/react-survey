@@ -31,6 +31,14 @@ module.exports = (app) => {
    */
   router.post("/create", result.create);
 
+  /**
+   * PUT request to update an existing result by its ID
+   * This method updates the result object with the matching ID using the data provided in the request body.
+   *
+   * @param {number} id - The ID of the result to update
+   */
+  router.put("/update/:id", result.update);
+
   // Export the router to be used in the main application
   app.use("/api/result", router);
 };

@@ -34,8 +34,7 @@ const View = (params: { id: string }): React.ReactElement => {
 
         // Fetches the survey results data from the Redux store.
         const resultsAction = await dispatch(load_one(params.id));
-        const data = resultsAction?.payload?.surveyResult;
-
+        const data = resultsAction?.payload;
         if (data) {
           if (data.length > 0 && visContainerRef.current) {
             // Creates a new SurveyCore model instance.
@@ -49,7 +48,9 @@ const View = (params: { id: string }): React.ReactElement => {
               new SurveyAnalyticsTabulator.Tabulator(
                 model,
                 data.map((item: any) =>
-                  typeof item === "string" ? JSON.parse(item) : item
+                  typeof item.surveyResult === "string"
+                    ? JSON.parse(item.surveyResult)
+                    : item.surveyResult
                 )
               );
 
