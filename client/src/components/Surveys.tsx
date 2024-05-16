@@ -6,7 +6,6 @@ import "./Surveys.css";
 const Surveys = (): React.ReactElement => {
   const surveys = useReduxSelector((state) => state.surveys.surveys);
   const dispatch = useReduxDispatch();
-  console.log("surveys", surveys);
   const postStatus = useReduxSelector((state) => state.surveys.status);
   const [newSurveyTitle, setNewSurveyTitle] = useState("");
   const [newSurveyDescription, setNewSurveyDescription] = useState("");
@@ -85,9 +84,8 @@ const Surveys = (): React.ReactElement => {
                 required
               />
             </div>
-            <span
+            <button
               className="sjs-button sjs-add-btn"
-              title="increment"
               onClick={() => {
                 dispatch(
                   create({
@@ -100,7 +98,7 @@ const Surveys = (): React.ReactElement => {
               }}
             >
               Add Survey
-            </span>
+            </button>
           </div>
           <div>
             <textarea
