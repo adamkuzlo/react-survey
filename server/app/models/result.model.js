@@ -1,16 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
   const Result = sequelize.define("Result", {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     surveyId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     surveyResult: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSON,
     },
     surveyResultText: {
       type: DataTypes.TEXT,
