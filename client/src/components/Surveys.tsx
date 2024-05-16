@@ -81,7 +81,6 @@ const Surveys = (): React.ReactElement => {
                 value={newSurveyTitle}
                 onChange={(e) => setNewSurveyTitle(e.target.value)}
                 placeholder="Title"
-                required
               />
             </div>
             <button
