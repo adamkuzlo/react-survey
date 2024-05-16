@@ -8,6 +8,7 @@ const Op = db.Sequelize.Op; // Define the Sequelize operation
  * @param {Object} res - The response object
  * @returns {void}
  */
+
 exports.create = (req, res) => {
   // Check if postId is present in the request body
   if (!req.body.postId) {
@@ -19,11 +20,10 @@ exports.create = (req, res) => {
 
   // Create a new Result object
   const result = {
-    postId: req.body.postId,
+    surveyId: req.body.postId,
     surveyResult: req.body.surveyResult,
     surveyResultText: req.body.surveyResultText,
   };
-
   // Create a new Result instance with the Result object
   Result.create(result)
     .then((data) => {
