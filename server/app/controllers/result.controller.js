@@ -120,7 +120,7 @@ exports.findAllById = (req, res) => {
 
   // Retrieve all Result instances with the postId
   Result.findAll({
-    where: { postId: id },
+    where: { surveyId: id },
   })
     .then((data) => {
       if (data.length > 0) {
